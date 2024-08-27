@@ -6,7 +6,7 @@
 /*   By: rmarin-j <rmarin-j@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 19:42:43 by rmarin-j          #+#    #+#             */
-/*   Updated: 2024/08/06 21:01:52 by rmarin-j         ###   ########.fr       */
+/*   Updated: 2024/08/07 20:39:35 by rmarin-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,15 @@
 
 /*----------pipex----------*/
 
+/*----------utils----------*/
+char	*ft_strjoin2(char const *s1, char const *s2);
 /*------------ft_split------------*/
 char		**ft_split(char const *s, char c);
 int			ft_free(const char *sub_s, char **ptr, char c, int *k);
 int			cont_word(char const *s, char c);
 char		*ft_substr(char const *s, unsigned int start, size_t len);
 size_t		ft_strlen(const char *str);
+/*----------ft_split_com-----------*/
+char	**ft_split_com(char *s, char c);
 
 #endif

@@ -1,52 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_split.c                                         :+:      :+:    :+:   */
+/*   ft_split com.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rmarin-j <rmarin-j@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/28 15:08:22 by rmarin-j          #+#    #+#             */
-/*   Updated: 2024/08/07 20:02:43 by rmarin-j         ###   ########.fr       */
+/*   Updated: 2024/08/08 17:39:59 by rmarin-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-size_t	ft_strlen(const char *str)
-{
-	size_t	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	char	*ptr;
-	size_t	i;
-
-	i = 0;
-	if (!s)
-		return (NULL);
-	if ((start + len) > ft_strlen(s))
-		len = ft_strlen(s) - start;
-	if (start >= ft_strlen(s))
-		len = 0;
-	ptr = (char *)malloc(sizeof(char) * (len + 1));
-	if (!ptr)
-		return (NULL);
-	while (i < len)
-	{
-		ptr[i] = s[start + i];
-		i++;
-	}
-	ptr[i] = '\0';
-	return (ptr);
-}
-
-int	cont_word(char const *s, char c)
+static int	cont_word2(char const *s, char c)
 {
 	int	i;
 	int	j;
@@ -57,6 +23,12 @@ int	cont_word(char const *s, char c)
 		return (0);
 	while (s[i])
 	{
+		if (s[i] == '\'')
+		{
+			i++;
+			while(s[i] != '\'' && s[i] != '\0')
+				i++;
+		}
 		if ((s[i + 1] == '\0' || s[i + 1] == c) && s[i] != c)
 			j++;
 		i++;
@@ -64,14 +36,23 @@ int	cont_word(char const *s, char c)
 	return (j);
 }
 
-int	ft_free(const char *sub_s, char **ptr, char c, int *k)
+int	ft_free2(const char *sub_s, char **ptr, char c, int *k)
 {
 	int	j;
+	int	flag;
 
 	j = 0;
+	flag = 0;
+	if (sub_s[j] == '\'')
+	{
+		flag = 1;
+		j++;
+		while(sub_s[j] != '\'' && sub_s[j] != '\0')
+			j++;
+	}
 	while (sub_s[j] != c && sub_s[j])
 		j++;
-	ptr[*k] = ft_substr(sub_s, 0, j);
+	ptr[*k] = ft_substr(sub_s, flag, j - 2 * flag);
 	if (!ptr[*k])
 	{
 		while (*k >= 0)
@@ -83,7 +64,19 @@ int	ft_free(const char *sub_s, char **ptr, char c, int *k)
 	return (*k);
 }
 
-char	**ft_split(char const *s, char c)
+void iteri(int i, int *j, char *s, char c)
+{
+		if (s[i] == '\'')
+		{
+			(*j)++;
+			while(s[i + *j] != '\'' && s[i + *j] != '\0')
+				(*j)++;
+		}
+	while (s[i + *j] != c && s[i + *j])
+		(*j)++;
+}
+
+char	**ft_split_com(char *s, char c)
 {
 	int		i;
 	int		j;
@@ -92,7 +85,7 @@ char	**ft_split(char const *s, char c)
 
 	i = -1;
 	k = 0;
-	ptr = malloc (sizeof(char *) * (cont_word(s, c) + 1));
+	ptr = malloc (sizeof(char *) * (cont_word2(s, c) + 1));
 	if (!ptr)
 		return (NULL);
 	while (s[++i])
@@ -100,9 +93,8 @@ char	**ft_split(char const *s, char c)
 		j = 0;
 		if (s[i] != c)
 		{
-			while (s[i + j] != c && s[i + j])
-				j++;
-			k = ft_free(&s[i], ptr, c, &k);
+			iteri(i, &j, s, c);
+			k = ft_free2(&s[i], ptr, c, &k);
 			if (k == -1)
 				return (NULL);
 			i += j -1;
